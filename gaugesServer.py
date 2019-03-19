@@ -7,7 +7,7 @@ import subprocess
 
 print (time.ctime(),"startup!")
 
-TCP_IP = '192.168.0.145'
+TCP_IP = '192.168.0.5'
 TCP_PORT = 9999
 BUFFER_SIZE = 20  # Normally 1024, but we want fast response
 
