@@ -1,25 +1,14 @@
 #!/usr/bin/env python
 import datetime, time
-from astral import Astral
 import socket
 from IPy import IP
 
-# l = Location()
-# l.name = 'Aarhus,Thunogade'
-# l.region = 'Denmark'
-# l.latitude = 56.16090
-# l.longitude = 10.20393
-# l.timezone = 'Europe/Copenhagen'
-# l.elevation = 40
-# l.sun()
-
-a=Astral() #instantiate object
 
 
 print time.ctime(),"startup!"
 
 TCP_IP = '192.168.0.179'
-TCP_PORT = 1337
+TCP_PORT = 9999
 BUFFER_SIZE = 20  # Normally 1024, but we want fast response
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
