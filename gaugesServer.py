@@ -16,6 +16,8 @@ s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) #make socket reuseable, 
 s.bind((TCP_IP, TCP_PORT))
 s.listen(1)
 
+sardukarPercent=0
+rocksteadyPercent=0
 
 print('Opening TCP port', TCP_PORT)
 
