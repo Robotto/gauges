@@ -90,9 +90,8 @@ void getIt()
     return;
   }
 
-  delay(500); //plenty of time for local server to respond
+  delay(1000); //plenty of time for local server to respond
 
-  // Read all the lines of the reply from server and print them to Serial
   if(client.available()>4){ //when more than one percentage has been received
     Serial.print("Before: S: "); Serial.print(sardkarPercentage); Serial.print(", R: ");Serial.println(rocksteadyPercentage);
     sardkarPercentage=client.parseInt();
@@ -114,14 +113,14 @@ void setSardukar(int percentage)
     uint8_t red=(uint8_t)((float)255.0*(float)percentage/100);
     uint8_t green=(uint8_t)((float)255.0*(100.0-(float)percentage)/100);
     
-    Serial.print("Sardukar: "); Serial.print(percentage);
-    Serial.print("%, "); Serial.print("PWM:"); Serial.print(pwm);
-    Serial.print(", R: "); Serial.print(red); Serial.print(", G:"); Serial.print(green); 
-    Serial.println();
+    //Serial.print("Sardukar: "); Serial.print(percentage);
+    //Serial.print("%, "); Serial.print("PWM:"); Serial.print(pwm);
+    //Serial.print(", R: "); Serial.print(red); Serial.print(", G:"); Serial.print(green); 
+    //Serial.println();
+    
     analogWrite(sardukarGauge,pwm);
     sardukarPixel.setPixelColor(0,red,green,0);
     sardukarPixel.show();
-
 }
 
 void setRocksteady(int percentage)
@@ -130,13 +129,12 @@ void setRocksteady(int percentage)
     uint8_t red=(uint8_t)((float)255.0*(float)percentage/100);
     uint8_t green=(uint8_t)((float)255.0*(100.0-(float)percentage)/100);
     
-    Serial.print("Rocksteady: "); Serial.print(percentage);
-    Serial.print("%, "); Serial.print("PWM:"); Serial.print(pwm);
-    Serial.print(", R: "); Serial.print(red); Serial.print(", G:"); Serial.print(green); 
-    Serial.println();
+    //Serial.print("Rocksteady: "); Serial.print(percentage);
+    //Serial.print("%, "); Serial.print("PWM:"); Serial.print(pwm);
+    //Serial.print(", R: "); Serial.print(red); Serial.print(", G:"); Serial.print(green); 
+    //Serial.println();
     
     analogWrite(rocksteadyGauge,pwm);
     rocksteadyPixel.setPixelColor(0,red,green,0);
     rocksteadyPixel.show();
-
 }
