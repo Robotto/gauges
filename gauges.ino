@@ -1,10 +1,23 @@
 #include <Adafruit_NeoPixel.h>
+#include <ESP8266WiFi.h>
+
+const char* ssid     = "korrosion";
+const char* password = "NOPE";
+
+//const char* host = "192.168.0.5"; //could be global, but this is just lan
+const char* host = "192.168.1.107"; //Test lan.
+const int hostPort = 9999;
 
 static int rocksteadyGauge=4; 
 static int rocksteadyPixelPin=15;
 static int sardukarGauge=5;
 static int sardukarPixelPin=13;
-static int delayms=50;
+
+static int loopDelay=1000*60*5; //every 5 minutes
+int lastGet=0;
+
+volatile int sardkarPercentage=50;
+volatile int rocksteadyPercentage=50;
 
 Adafruit_NeoPixel rocksteadyPixel = Adafruit_NeoPixel(1, rocksteadyPixelPin, NEO_GRB + NEO_KHZ800);
 Adafruit_NeoPixel sardukarPixel = Adafruit_NeoPixel(1, sardukarPixelPin, NEO_GRB + NEO_KHZ800);
@@ -18,25 +31,82 @@ void setup() {
   sardukarPixel.setPixelColor(0, 0x00FF00);
   rocksteadyPixel.show();
   sardukarPixel.show();
+
+  //First run after 5 seconds:
+  delay(5000);
+  getIt();
+  setSardukar(sardkarPercentage);
+  setRocksteady(rocksteadyPercentage);
+
 }
 
 void loop() {
-  Serial.println("-------------");
-  
-  int percent=0;
 
-  for (percent = 0; percent <= 100; percent += 1) { // goes from 0% to 100%
-    setRocksteady(percent);
-    setSardukar(100-percent);
-    delay(delayms);
+ if(millis()>lastGet+loopDelay) {
+  	Serial.println("Getting data!");
+  	lastGet=millis();
+  	getIt();
+
+    setSardukar(sardkarPercentage);
+    setRocksteady(rocksteadyPercentage);
+    }
   }
-  for (percent = 100; percent >= 0; percent -= 1) { // goes from 100% to 0%
-    setRocksteady(percent);
-    setSardukar(100-percent);
-    delay(delayms);
+
+void getIt()
+{
+  int wifiTries=0;
+
+  // Use WiFiClient class to create TCP connections
+  WiFiClient client;
+
+
+  Serial.println();
+  Serial.print("Connecting to ");
+  Serial.println(ssid);
+
+  WiFi.begin(ssid, password);
+
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    wifiTries++;
+    Serial.print(".");
+    if(wifiTries==60) { //after 30 seconds of trying to connect.
+    	Serial.println("WiFi connection failed.. will retry next round.");
+    	WiFi.disconnect();
+    	return;
+    }
   }
+
+  Serial.println("");
+  Serial.println("WiFi connected");
+  Serial.println("IP address: ");
+  Serial.println(WiFi.localIP());
+
+  Serial.print("connecting to ");
+  Serial.println(host);
+
+  if (!client.connect(host, hostPort)) {
+    Serial.println("connection failed");
+    return;
+  }
+
+  delay(500); //plenty of time for local server to respond
+
+  // Read all the lines of the reply from server and print them to Serial
+  if(client.available()>4){ //when more than one percentage has been received
+    Serial.print("Before: S: "); Serial.print(sardkarPercentage); Serial.print(", R: ");Serial.println(rocksteadyPercentage);
+    sardkarPercentage=client.parseInt();
+    rocksteadyPercentage=client.parseInt();
+    Serial.print("After: S: ");  Serial.print(sardkarPercentage); Serial.print(", R: ");Serial.println(rocksteadyPercentage);
+    }
+
+   Serial.println();
+   Serial.println("disconnecting.");
+   client.stop();
+
+   WiFi.disconnect();
+
 }
-
 
 void setSardukar(int percentage)
 {
