@@ -1,19 +1,19 @@
 #include <Adafruit_NeoPixel.h>
 #include <ESP8266WiFi.h>
 
-const char* ssid     = "korrosion";
-const char* password = "NOPE";
+const char* ssid     = "nope";
+const char* password = "nooope";
 
-//const char* host = "192.168.0.5"; //could be global, but this is just lan
-const char* host = "192.168.1.107"; //Test lan.
+const char* host = "192.168.0.5"; //could be global, but this is just lan
+//const char* host = "192.168.1.107"; //Test lan.
 const int hostPort = 9999;
 
-static int rocksteadyGauge=4; 
-static int rocksteadyPixelPin=15;
-static int sardukarGauge=5;
-static int sardukarPixelPin=13;
+const int rocksteadyGauge=4; 
+const int rocksteadyPixelPin=15;
+const int sardukarGauge=5;
+const int sardukarPixelPin=13;
 
-static int loopDelay=1000*60*5; //every 5 minutes
+const int loopDelay=1000*60*10; //every 10 minutes
 int lastGet=0;
 
 volatile int sardkarPercentage=50;
@@ -109,32 +109,41 @@ void getIt()
 
 void setSardukar(int percentage)
 {
+    static int oldPercentage;
+    if(percentage==oldPercentage) {Serial.println("Sardukar: No change."); return;} //no change -> Do nothing
+
     int pwm=(int)((float)percentage/100.0*(float)PWMRANGE);
     uint8_t red=(uint8_t)((float)255.0*(float)percentage/100);
     uint8_t green=(uint8_t)((float)255.0*(100.0-(float)percentage)/100);
     
-    //Serial.print("Sardukar: "); Serial.print(percentage);
-    //Serial.print("%, "); Serial.print("PWM:"); Serial.print(pwm);
-    //Serial.print(", R: "); Serial.print(red); Serial.print(", G:"); Serial.print(green); 
-    //Serial.println();
+    Serial.print("Sardukar: "); Serial.print(percentage);
+    Serial.print("%, "); Serial.print("PWM:"); Serial.print(pwm);
+    Serial.print(", R: "); Serial.print(red); Serial.print(", G:"); Serial.print(green); 
+    Serial.println();
     
     analogWrite(sardukarGauge,pwm);
     sardukarPixel.setPixelColor(0,red,green,0);
     sardukarPixel.show();
+    oldPercentage=percentage;
 }
 
 void setRocksteady(int percentage)
 {
+    static int oldPercentage;
+    if(percentage==oldPercentage) {Serial.println("Rocksteady: No change."); return;} //no change -> Do nothing
+
+
     int pwm=(int)((float)percentage/100.0*(float)PWMRANGE);
     uint8_t red=(uint8_t)((float)255.0*(float)percentage/100);
     uint8_t green=(uint8_t)((float)255.0*(100.0-(float)percentage)/100);
     
-    //Serial.print("Rocksteady: "); Serial.print(percentage);
-    //Serial.print("%, "); Serial.print("PWM:"); Serial.print(pwm);
-    //Serial.print(", R: "); Serial.print(red); Serial.print(", G:"); Serial.print(green); 
-    //Serial.println();
+    Serial.print("Rocksteady: "); Serial.print(percentage);
+    Serial.print("%, "); Serial.print("PWM:"); Serial.print(pwm);
+    Serial.print(", R: "); Serial.print(red); Serial.print(", G:"); Serial.print(green); 
+    Serial.println();
     
     analogWrite(rocksteadyGauge,pwm);
     rocksteadyPixel.setPixelColor(0,red,green,0);
     rocksteadyPixel.show();
+    oldPercentage=percentage;
 }
