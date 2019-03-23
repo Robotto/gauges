@@ -37,7 +37,7 @@ while True:
                 print('Rocksteady:',rocksteadyPercent)
 
         #txString = str(22)
-        txString = str(sardukarPercent)+','+str(rocksteadyPercent)+'\r'
+        txString = str(sardukarPercent)+'\r'+str(rocksteadyPercent)+'\r'
         conn.send(txString)#+'\n')  # echo
         print ('TX: ', txString) #txString.replace('\r','\r\n')
         print ('Client disconnected.')
