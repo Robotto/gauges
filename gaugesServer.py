@@ -26,7 +26,7 @@ while True:
         conn, addr = s.accept()
         print(time.ctime(),'Connection from:', addr)
         #ask sardukar about disk usage
-        sardukarDiskUsage = subprocess.check_output("ssh robotto@sardukar.moore.dk -p 222 df | grep 'vg00-root' | awk '{print $5}'", shell=True)
+        sardukarDiskUsage = subprocess.check_output("ssh sardukar df | grep 'vg00-root' | awk '{print $5}'", shell=True)
         sardukarPercent = int(sardukarDiskUsage.strip().replace("%", ""))
         print('Sardukar:',sardukarPercent)
 
@@ -37,7 +37,7 @@ while True:
                 print('Rocksteady:',rocksteadyPercent)
 
         #txString = str(22)
-        txString = str(sardukarPercent)+','+str(rocksteadyPercent)+'\r'
+        txString = str(sardukarPercent)+'\r'+str(rocksteadyPercent)+'\r'
         conn.send(txString)#+'\n')  # echo
         print ('TX: ', txString) #txString.replace('\r','\r\n')
         print ('Client disconnected.')
